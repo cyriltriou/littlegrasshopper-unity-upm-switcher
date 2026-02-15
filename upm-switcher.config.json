@@ -1,0 +1,22 @@
+﻿{
+  "profiles": [
+    {
+      "name": "RogueliteSurvivor",
+      "projectPath": "D:/Unity/RogueliteSurvivor",
+      "packages": [
+        {
+          "name": "com.littlegrasshopper.tools.codecksbacklog",
+          "localPath": "D:/Unity/WorkspaceCustomPackages/com.littlegrasshopper.tools.codecksbacklog",
+          "gitUrl": "https://github.com/cyriltriou/com.littlegrasshopper.tools.codecksbacklog.git",
+          "gitRef": "main"
+        },
+        {
+          "name": "com.littlegrasshopper.tools.githubbacklog",
+          "localPath": "D:/Unity/WorkspaceCustomPackages/com.littlegrasshopper.tools.githubbacklog",
+          "gitUrl": "https://github.com/cyriltriou/com.littlegrasshopper.tools.githubbacklog.git",
+          "gitRef": "main"
+        }
+      ]
+    }
+  ]
+}
