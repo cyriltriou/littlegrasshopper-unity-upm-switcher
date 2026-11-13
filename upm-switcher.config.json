@@ -17,6 +17,18 @@
           "gitRef": "main"
         }
       ]
+    },
+    {
+      "name": "UnderTheSkin",
+      "projectPath": "D:/Unity/UnderTheSkin",
+      "packages": [
+        {
+          "name": "com.littlegrasshopper.testcampaign",
+          "localPath": "D:/Unity/WorkspaceCustomPackages/com.littlegrasshopper.testcampaign",
+          "gitUrl": "https://github.com/cyriltriou/com.littlegrasshopper.testcampaign.git",
+          "gitRef": "v0.1.0"
+        }
+      ]
     }
   ]
 }
