@@ -64,3 +64,11 @@ powershell -ExecutionPolicy Bypass -File .\Switch-UpmSources.ps1 -Mode git -Prof
 - In `file` mode, package source of truth is the external repository path (`localPath`).
 - In `git` mode, package source of truth is the package git repository at the selected `gitRef`.
 - Unity may auto-refresh after manifest changes; if not, reopen the project.
+- Only the value of each switched package changes in `manifest.json`: formatting, key order,
+  encoding (UTF-8 with or without BOM) and line endings are kept, so a switch is a one-line diff.
+  A package missing from `dependencies` is inserted at its alphabetical place.
+- `-CleanLock` removes the package's top-level entry from `packages-lock.json` and leaves the
+  rest of the file as it is; Unity regenerates the entry on the next resolve.
+- In `file` mode the path is written relative to `Packages/` (`file:../../...`) when the project
+  and the package are on the same drive, and absolute (`file:D:/...`) when they are not.
+- `gitRef` is optional (defaults to `main`). `-Package a,b` also works through `powershell -File`.
