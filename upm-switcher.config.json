@@ -3,7 +3,14 @@
   "packagesRoot": "D:/Unity/WorkspaceCustomPackages",
   "packagePrefix": "com.littlegrasshopper.",
   "excludeProjects": ["_*", "*_tmp", "*_codex_validate_*"],
-  "packages": [],
+  "packages": [
+    {
+      "name": "com.kinema.vr",
+      "localPath": "D:/Unity/WorkspaceCustomPackages/kinema/Packages/com.kinema.vr",
+      "repoPath": "D:/Unity/WorkspaceCustomPackages/kinema",
+      "gitUrl": "https://github.com/3dnxstudio/kinema.git?path=/Packages/com.kinema.vr"
+    }
+  ],
   "profiles": [
     {
       "name": "RogueliteSurvivor",

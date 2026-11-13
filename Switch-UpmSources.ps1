@@ -375,7 +375,16 @@ function Get-PackageRepoInfo {
 function New-PackageEntry {
     param([string]$Name)
 
-    return [pscustomobject]@{ name = $Name; localPath = $null; gitUrl = $null; gitRef = $null }
+    return [pscustomobject]@{ name = $Name; localPath = $null; gitUrl = $null; gitRef = $null; repoPath = $null }
+}
+
+function Get-PackageRepoPath {
+    param($Pkg)
+
+    # The git repository that holds the package: repoPath when the package sits in a subfolder of its
+    # repository (kinema: Packages/com.kinema.vr), else localPath.
+    if (-not [string]::IsNullOrWhiteSpace($Pkg.repoPath)) { return $Pkg.repoPath }
+    return $Pkg.localPath
 }
 
 function Resolve-PackageEntry {
@@ -387,9 +396,9 @@ function Resolve-PackageEntry {
 
     $resolved = New-PackageEntry -Name $name
     if ($Catalog.ContainsKey($name)) {
-        foreach ($key in @("localPath", "gitUrl", "gitRef")) { $resolved.$key = $Catalog[$name].$key }
+        foreach ($key in @("localPath", "gitUrl", "gitRef", "repoPath")) { $resolved.$key = $Catalog[$name].$key }
     }
-    foreach ($key in @("localPath", "gitUrl", "gitRef")) {
+    foreach ($key in @("localPath", "gitUrl", "gitRef", "repoPath")) {
         $value = Get-OptionalProperty $Entry $key
         if (-not [string]::IsNullOrWhiteSpace($value)) { $resolved.$key = $value }
     }
@@ -517,7 +526,8 @@ function Get-GitTarget {
 
     $url = $Pkg.gitUrl
     $info = $null
-    if (-not [string]::IsNullOrWhiteSpace($Pkg.localPath)) { $info = Get-PackageRepoInfo -LocalPath $Pkg.localPath }
+    $repoPath = Get-PackageRepoPath -Pkg $Pkg
+    if (-not [string]::IsNullOrWhiteSpace($repoPath)) { $info = Get-PackageRepoInfo -LocalPath $repoPath }
     if ([string]::IsNullOrWhiteSpace($url) -and $null -ne $info) { $url = $info.Origin }
     if ([string]::IsNullOrWhiteSpace($url)) {
         throw "Package '$($Pkg.name)' has no gitUrl and its local repository has no 'origin' remote"
@@ -541,7 +551,9 @@ function Test-RemoteRef {
     $previousPrompt = $env:GIT_TERMINAL_PROMPT
     $env:GIT_TERMINAL_PROMPT = "0"
     try {
-        $result = Invoke-Git -RepoPath "" -Arguments @("ls-remote", "--exit-code", $Url, "refs/tags/$Ref", "refs/heads/$Ref")
+        # UPM's "?path=/sub/folder" is not part of the git URL.
+        $repoUrl = ($Url -split "\?")[0]
+        $result = Invoke-Git -RepoPath "" -Arguments @("ls-remote", "--exit-code", $repoUrl, "refs/tags/$Ref", "refs/heads/$Ref")
     }
     finally {
         $env:GIT_TERMINAL_PROMPT = $previousPrompt
@@ -566,8 +578,9 @@ function Show-Status {
         $pkg = $Catalog[$name]
         $repo = "-"
         $latest = $null
-        if (-not [string]::IsNullOrWhiteSpace($pkg.localPath)) {
-            $info = Get-PackageRepoInfo -LocalPath $pkg.localPath
+        $repoPath = Get-PackageRepoPath -Pkg $pkg
+        if (-not [string]::IsNullOrWhiteSpace($repoPath)) {
+            $info = Get-PackageRepoInfo -LocalPath $repoPath
             $latest = $info.LatestTag
             if (-not $info.Exists) { $repo = "local folder missing" }
             elseif (-not $info.IsGit) { $repo = "not a git repository" }
@@ -598,7 +611,8 @@ function Show-Status {
 
             if ($source.Kind -eq "git") {
                 $latest = $null
-                if (-not [string]::IsNullOrWhiteSpace($pkg.localPath)) { $latest = (Get-PackageRepoInfo -LocalPath $pkg.localPath).LatestTag }
+                $repoPath = Get-PackageRepoPath -Pkg $pkg
+                if (-not [string]::IsNullOrWhiteSpace($repoPath)) { $latest = (Get-PackageRepoInfo -LocalPath $repoPath).LatestTag }
                 if ($source.Ref) { $ref = $source.Ref }
                 if ($null -eq $source.Ref) { $note = "no ref: follows the default branch" }
                 elseif ($latest -and $source.Ref -eq $latest) { $note = "latest tag" }

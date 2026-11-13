@@ -75,7 +75,12 @@ the remote (a tag created but not pushed would make Unity fail). `-SkipRemoteChe
   "packagePrefix": "com.littlegrasshopper.",
   "excludeProjects": ["_*", "*_tmp"],
   "packages": [
-    { "name": "com.example.other", "localPath": "D:/Elsewhere/com.example.other", "gitUrl": "https://github.com/<owner>/other.git" }
+    {
+      "name": "com.kinema.vr",
+      "localPath": "D:/Unity/WorkspaceCustomPackages/kinema/Packages/com.kinema.vr",
+      "repoPath": "D:/Unity/WorkspaceCustomPackages/kinema",
+      "gitUrl": "https://github.com/3dnxstudio/kinema.git?path=/Packages/com.kinema.vr"
+    }
   ],
   "profiles": [
     {
@@ -88,7 +93,9 @@ the remote (a tag created but not pushed would make Unity fail). `-SkipRemoteChe
 ```
 
 - Package catalog: every folder of `packagesRoot` whose name starts with `packagePrefix` and holds a
-  `package.json` (the package name is read from it). `packages` adds to or overrides that catalog.
+  `package.json` (the package name is read from it). `packages` adds to or overrides that catalog:
+  use it for a package outside the prefix, or one that sits in a subfolder of its repository
+  (`repoPath` is then the repository, read for tags and push state; `gitUrl` keeps UPM's `?path=`).
 - Projects: every folder of `projectsRoot` with a `Packages/manifest.json`, minus `excludeProjects`
   (wildcards; `_*` by default, which skips the package host projects).
 - A profile entry can give just a `name`; `localPath`, `gitUrl` and `gitRef` then come from the catalog.
